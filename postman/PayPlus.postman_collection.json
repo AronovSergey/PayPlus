@@ -15,6 +15,10 @@
     {
       "key": "walletId",
       "value": ""
+    },
+    {
+      "key": "transactionId",
+      "value": ""
     }
   ],
   "item": [
@@ -251,6 +255,108 @@
                 "exec": [
                   "pm.test('status 200', () => pm.response.to.have.status(200));",
                   "pm.test('status is inactive', () => pm.expect(pm.response.json().status).to.eql('inactive'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Charge — success",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/transactions/charge",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"merchantId\": \"{{merchantId}}\",\n  \"amount\": \"10.00\",\n  \"currency\": \"ILS\",\n  \"idempotencyKey\": \"charge-001\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('transactionId', res.id);",
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('transaction completed', () => pm.expect(res.status).to.eql('completed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Charge — insufficient funds",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/transactions/charge",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"merchantId\": \"{{merchantId}}\",\n  \"amount\": \"999999.00\",\n  \"currency\": \"ILS\",\n  \"idempotencyKey\": \"charge-insufficient\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('code is insufficient_funds', () => pm.expect(res.error.code).to.eql('insufficient_funds'));",
+                  "pm.test('has details', () => pm.expect(res.error.details).to.exist);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Charge — idempotency (duplicate key)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/transactions/charge",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"merchantId\": \"{{merchantId}}\",\n  \"amount\": \"10.00\",\n  \"currency\": \"ILS\",\n  \"idempotencyKey\": \"charge-001\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('returns same transaction id', () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('transactionId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Charge — wallet inactive",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/transactions/charge",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"merchantId\": \"{{merchantId}}\",\n  \"amount\": \"10.00\",\n  \"currency\": \"ILS\",\n  \"idempotencyKey\": \"charge-wallet-inactive\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('transaction declined', () => pm.expect(pm.response.json().status).to.eql('declined'));",
+                  "pm.test('reason is wallet_inactive', () => pm.expect(pm.response.json().declineReason).to.eql('wallet_inactive'));"
                 ]
               }
             }
