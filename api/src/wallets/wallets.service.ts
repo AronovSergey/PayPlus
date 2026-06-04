@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Big } from 'big.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Wallet } from '../entities/wallet.entity';
@@ -49,7 +50,7 @@ export class WalletsService {
 
   async deposit(id: string, dto: DepositDto): Promise<Wallet> {
     const wallet = await this.findById(id);
-    wallet.balance = String((Number(wallet.balance) + Number(dto.amount)).toFixed(2));
+    wallet.balance = new Big(wallet.balance).plus(dto.amount).toFixed(2);
     return this.walletRepo.save(wallet);
   }
 }

@@ -1,4 +1,5 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Big } from 'big.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, OptimisticLockVersionMismatchError, Repository } from 'typeorm';
 import { LedgerEntry } from '../entities/ledger-entry.entity';
@@ -97,7 +98,7 @@ export class TransactionsService {
         }
 
         // declined: not enough balance — persisted then thrown as 409 with details
-        if (Number(wallet.balance) < Number(dto.amount)) {
+        if (new Big(wallet.balance).lt(dto.amount)) {
           const declined = manager.create(Transaction, {
             walletId: dto.walletId,
             merchantId: dto.merchantId,
@@ -120,7 +121,7 @@ export class TransactionsService {
           }), { transaction: saved });
         }
 
-        wallet.balance = String((Number(wallet.balance) - Number(dto.amount)).toFixed(2));
+        wallet.balance = new Big(wallet.balance).minus(dto.amount).toFixed(2);
         // version column incremented here — concurrent charge to same wallet will throw OptimisticLockVersionMismatchError
         await manager.save(Wallet, wallet);
 
@@ -185,7 +186,7 @@ export class TransactionsService {
           throw new NotFoundException(`Wallet ${original.walletId} not found`);
         }
 
-        wallet.balance = String((Number(wallet.balance) + Number(original.amount)).toFixed(2));
+        wallet.balance = new Big(wallet.balance).plus(original.amount).toFixed(2);
         // version column incremented here — concurrent modification throws OptimisticLockVersionMismatchError
         await manager.save(Wallet, wallet);
 
