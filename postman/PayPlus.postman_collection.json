@@ -11,6 +11,10 @@
     {
       "key": "merchantId",
       "value": ""
+    },
+    {
+      "key": "walletId",
+      "value": ""
     }
   ],
   "item": [
@@ -61,10 +65,10 @@
           ]
         },
         {
-          "name": "List Merchants",
+          "name": "List Merchants (page 1)",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/merchants"
+            "url": "{{baseUrl}}/merchants?page=1&limit=20"
           },
           "event": [
             {
@@ -80,10 +84,137 @@
           ]
         },
         {
+          "name": "List Merchants (page 2)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/merchants?page=2&limit=20"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Update Merchant Status",
           "request": {
             "method": "PATCH",
             "url": "{{baseUrl}}/merchants/{{merchantId}}/status",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"inactive\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('status is inactive', () => pm.expect(pm.response.json().status).to.eql('inactive'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wallets",
+      "item": [
+        {
+          "name": "Create Wallet",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/wallets",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"externalId\": \"emp-001\",\n  \"currency\": \"ILS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('walletId', res.id);",
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('balance is 0', () => pm.expect(res.balance).to.eql('0.00'));",
+                  "pm.test('status is active', () => pm.expect(res.status).to.eql('active'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Wallet by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/wallets/{{walletId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has balance', () => pm.expect(pm.response.json().balance).to.exist);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Wallets (page 1)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/wallets?page=1&limit=20"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));",
+                  "pm.test('has total', () => pm.expect(pm.response.json().total).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Wallets (page 2)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/wallets?page=2&limit=20"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has data array', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Wallet Status",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/wallets/{{walletId}}/status",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",

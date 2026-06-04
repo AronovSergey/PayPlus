@@ -60,23 +60,23 @@
 
 ## Phase 6 — Wallets Module Skeleton
 
-- [ ] `nest g module wallets`
-- [ ] `nest g controller wallets`
-- [ ] `nest g service wallets`
-- [ ] Inject `TypeOrmModule.forFeature([Wallet])` into `WalletsModule`
-- [ ] Create `dto/create-wallet.dto.ts` — `externalId: string`, `currency: string`
-- [ ] Create `dto/update-status.dto.ts` — `status: WalletStatus`
+- [x] `nest g module wallets`
+- [x] `nest g controller wallets`
+- [x] `nest g service wallets`
+- [x] Inject `TypeOrmModule.forFeature([Wallet])` into `WalletsModule`
+- [x] Create `dto/create-wallet.dto.ts` — `externalId: string`, `currency: string`
+- [x] Create `dto/update-status.dto.ts` — `status: WalletStatus`
 
 ---
 
 ## Phase 7 — Wallets Logic
 
-- [ ] `create()` — save wallet with `balance: 0`, status `active`
-- [ ] `findById()` — return wallet (includes balance) or throw `NotFoundException`
-- [ ] `findAll()` — return list (basic pagination optional)
-- [ ] `updateStatus()` — activate or inactivate
-- [ ] Wire up: `POST /api/wallets`, `GET /api/wallets/:id`, `GET /api/wallets`, `PATCH /api/wallets/:id/status`
-- [ ] Test all four endpoints
+- [x] `create()` — save wallet with `balance: 0`, status `active`
+- [x] `findById()` — return wallet (includes balance) or throw `NotFoundException`
+- [x] `findAll()` — return list (basic pagination optional)
+- [x] `updateStatus()` — activate or inactivate
+- [x] Wire up: `POST /api/wallets`, `GET /api/wallets/:id`, `GET /api/wallets`, `PATCH /api/wallets/:id/status`
+- [x] Test all four endpoints
 
 ---
 
