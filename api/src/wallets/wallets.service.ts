@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Wallet } from '../entities/wallet.entity';
 import { WalletStatus } from '../types/enums';
 import { CreateWalletDto } from './dto/create-wallet.dto';
+import { DepositDto } from './dto/deposit.dto';
 import { UpdateWalletStatusDto } from './dto/update-status.dto';
 
 @Injectable()
@@ -43,6 +44,12 @@ export class WalletsService {
   async updateStatus(id: string, dto: UpdateWalletStatusDto): Promise<Wallet> {
     const wallet = await this.findById(id);
     wallet.status = dto.status;
+    return this.walletRepo.save(wallet);
+  }
+
+  async deposit(id: string, dto: DepositDto): Promise<Wallet> {
+    const wallet = await this.findById(id);
+    wallet.balance = String((Number(wallet.balance) + Number(dto.amount)).toFixed(2));
     return this.walletRepo.save(wallet);
   }
 }

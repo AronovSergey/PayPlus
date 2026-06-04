@@ -82,29 +82,29 @@
 
 ## Phase 8 — Transactions Module Skeleton
 
-- [ ] `nest g module transactions`
-- [ ] `nest g controller transactions`
-- [ ] `nest g service transactions`
-- [ ] Inject `TypeOrmModule.forFeature([Transaction, Wallet, Merchant])` + `DataSource`
-- [ ] Create `dto/charge.dto.ts` — `walletId, merchantId, amount, currency, idempotencyKey`
-- [ ] Create `dto/refund.dto.ts` — `originalTransactionId, idempotencyKey`
+- [x] `nest g module transactions`
+- [x] `nest g controller transactions`
+- [x] `nest g service transactions`
+- [x] Inject `TypeOrmModule.forFeature([Transaction, Wallet, Merchant])` + `DataSource`
+- [x] Create `dto/charge.dto.ts` — `walletId, merchantId, amount, currency, idempotencyKey`
+- [x] Create `dto/refund.dto.ts` — `originalTransactionId, idempotencyKey`
 
 ---
 
 ## Phase 9 — Charge Logic (Core)
 
-- [ ] Check `idempotencyKey` — if exists return existing transaction immediately
-- [ ] Open `dataSource.transaction(async manager => { ... })`
-- [ ] Lock wallet with `pessimistic_write`
-- [ ] Validate wallet status is `active` — if not, save as `declined` (reason: `wallet_inactive`)
-- [ ] Validate merchant status is `active` — if not, save as `declined` (reason: `merchant_inactive`)
-- [ ] Validate `balance >= amount` — if not, save as `declined` (reason: `insufficient_funds`) + return structured error
-- [ ] Deduct balance, save wallet
-- [ ] Save transaction as `completed`
-- [ ] Save `LedgerEntry` of type `charge`
-- [ ] All three saves inside same DB transaction
-- [ ] Wire up `POST /api/transactions/charge`
-- [ ] Test: concurrent requests — only one should succeed when balance is insufficient
+- [x] Check `idempotencyKey` — if exists return existing transaction immediately
+- [x] Open `dataSource.transaction(async manager => { ... })`
+- [x] Lock wallet with optimistic locking (`@VersionColumn`) instead of `pessimistic_write`
+- [x] Validate wallet status is `active` — if not, save as `declined` (reason: `wallet_inactive`)
+- [x] Validate merchant status is `active` — if not, save as `declined` (reason: `merchant_inactive`)
+- [x] Validate `balance >= amount` — if not, save as `declined` (reason: `insufficient_funds`) + return structured error
+- [x] Deduct balance, save wallet
+- [x] Save transaction as `completed`
+- [x] Save `LedgerEntry` of type `charge`
+- [x] All three saves inside same DB transaction
+- [x] Wire up `POST /api/transactions/charge`
+- [x] Test: concurrent requests — only one should succeed when balance is insufficient
 
 ---
 

@@ -1,0 +1,137 @@
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, OptimisticLockVersionMismatchError, Repository } from 'typeorm';
+import { LedgerEntry } from '../entities/ledger-entry.entity';
+import { Merchant } from '../entities/merchant.entity';
+import { Transaction } from '../entities/transaction.entity';
+import { Wallet } from '../entities/wallet.entity';
+import { LedgerEntryType, MerchantStatus, TransactionStatus, TransactionType, WalletStatus } from '../types/enums';
+import { ChargeDto } from './dto/charge.dto';
+
+@Injectable()
+export class TransactionsService {
+  constructor(
+    @InjectRepository(Transaction)
+    private readonly transactionRepo: Repository<Transaction>,
+    @InjectRepository(Wallet)
+    private readonly walletRepo: Repository<Wallet>,
+    @InjectRepository(Merchant)
+    private readonly merchantRepo: Repository<Merchant>,
+    private readonly dataSource: DataSource,
+  ) {}
+
+  async charge(dto: ChargeDto): Promise<Transaction> {
+    // idempotency: same key returns the original transaction without reprocessing
+    const existing = await this.transactionRepo.findOne({
+      where: { idempotencyKey: dto.idempotencyKey },
+    });
+    if (existing) {
+      return existing;
+    }
+
+    try {
+      return await this.dataSource.transaction(async (manager) => {
+        const wallet = await manager.findOne(Wallet, { where: { id: dto.walletId } });
+        // wallet must exist — bad request if caller sends a non-existent ID
+        if (!wallet) {
+          throw new NotFoundException(`Wallet ${dto.walletId} not found`);
+        }
+
+        const merchant = await manager.findOne(Merchant, { where: { id: dto.merchantId } });
+        // merchant must exist — bad request if caller sends a non-existent ID
+        if (!merchant) {
+          throw new NotFoundException(`Merchant ${dto.merchantId} not found`);
+        }
+
+        // declined: wallet is inactive — still persisted so the caller has a record
+        if (wallet.status !== WalletStatus.ACTIVE) {
+          const declined = manager.create(Transaction, {
+            walletId: dto.walletId,
+            merchantId: dto.merchantId,
+            type: TransactionType.CHARGE,
+            amount: dto.amount,
+            currency: dto.currency,
+            status: TransactionStatus.DECLINED,
+            declineReason: 'wallet_inactive',
+            idempotencyKey: dto.idempotencyKey,
+          });
+          return manager.save(Transaction, declined);
+        }
+
+        // declined: merchant is inactive — still persisted so the caller has a record
+        if (merchant.status !== MerchantStatus.ACTIVE) {
+          const declined = manager.create(Transaction, {
+            walletId: dto.walletId,
+            merchantId: dto.merchantId,
+            type: TransactionType.CHARGE,
+            amount: dto.amount,
+            currency: dto.currency,
+            status: TransactionStatus.DECLINED,
+            declineReason: 'merchant_inactive',
+            idempotencyKey: dto.idempotencyKey,
+          });
+          return manager.save(Transaction, declined);
+        }
+
+        // declined: not enough balance — persisted then thrown as 409 with details
+        if (Number(wallet.balance) < Number(dto.amount)) {
+          const declined = manager.create(Transaction, {
+            walletId: dto.walletId,
+            merchantId: dto.merchantId,
+            type: TransactionType.CHARGE,
+            amount: dto.amount,
+            currency: dto.currency,
+            status: TransactionStatus.DECLINED,
+            declineReason: 'insufficient_funds',
+            idempotencyKey: dto.idempotencyKey,
+          });
+          const saved = await manager.save(Transaction, declined);
+          throw Object.assign(new ConflictException({
+            code: 'insufficient_funds',
+            message: 'Wallet does not have enough available balance',
+            details: {
+              wallet_id: wallet.id,
+              available_balance: wallet.balance,
+              requested_amount: dto.amount,
+            },
+          }), { transaction: saved });
+        }
+
+        wallet.balance = String((Number(wallet.balance) - Number(dto.amount)).toFixed(2));
+        // version column incremented here — concurrent charge to same wallet will throw OptimisticLockVersionMismatchError
+        await manager.save(Wallet, wallet);
+
+        const transaction = manager.create(Transaction, {
+          walletId: dto.walletId,
+          merchantId: dto.merchantId,
+          type: TransactionType.CHARGE,
+          amount: dto.amount,
+          currency: dto.currency,
+          status: TransactionStatus.COMPLETED,
+          idempotencyKey: dto.idempotencyKey,
+        });
+        const saved = await manager.save(Transaction, transaction);
+
+        const ledgerEntry = manager.create(LedgerEntry, {
+          walletId: dto.walletId,
+          transactionId: saved.id,
+          type: LedgerEntryType.CHARGE,
+          amount: dto.amount,
+          currency: dto.currency,
+        });
+        await manager.save(LedgerEntry, ledgerEntry);
+
+        return saved;
+      });
+    } catch (err) {
+      // two concurrent charges read the same wallet version — one wins, the other retries
+      if (err instanceof OptimisticLockVersionMismatchError) {
+        throw new ConflictException({
+          code: 'concurrent_modification',
+          message: 'Wallet was modified concurrently, please retry',
+        });
+      }
+      throw err;
+    }
+  }
+}

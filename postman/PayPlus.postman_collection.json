@@ -211,6 +211,29 @@
           ]
         },
         {
+          "name": "Deposit",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/wallets/{{walletId}}/deposit",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"500.00\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('balance updated', () => pm.expect(Number(pm.response.json().balance)).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Update Wallet Status",
           "request": {
             "method": "PATCH",

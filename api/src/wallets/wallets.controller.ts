@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CreateWalletDto } from './dto/create-wallet.dto';
+import { DepositDto } from './dto/deposit.dto';
 import { UpdateWalletStatusDto } from './dto/update-status.dto';
 import { WalletsService } from './wallets.service';
 
@@ -25,5 +26,10 @@ export class WalletsController {
   @Patch(':id/status')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateWalletStatusDto) {
     return this.walletsService.updateStatus(id, dto);
+  }
+
+  @Post(':id/deposit')
+  deposit(@Param('id') id: string, @Body() dto: DepositDto) {
+    return this.walletsService.deposit(id, dto);
   }
 }
