@@ -361,6 +361,145 @@
               }
             }
           ]
+        },
+        {
+          "name": "Refund — success",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/transactions/refund",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"originalTransactionId\": \"{{transactionId}}\",\n  \"idempotencyKey\": \"refund-001\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('refundTransactionId', res.id);",
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('type is refund', () => pm.expect(res.type).to.eql('refund'));",
+                  "pm.test('status is completed', () => pm.expect(res.status).to.eql('completed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refund — idempotency (duplicate key)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/transactions/refund",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"originalTransactionId\": \"{{transactionId}}\",\n  \"idempotencyKey\": \"refund-001\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('returns same refund id', () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('refundTransactionId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transactions/{{transactionId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has id', () => pm.expect(pm.response.json().id).to.exist);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transactions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Transactions — filter by walletId",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transactions?walletId={{walletId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('all belong to wallet', () => pm.response.json().forEach(t => pm.expect(t.walletId).to.eql(pm.collectionVariables.get('walletId'))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Transactions — filter by type",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transactions?type=charge"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('all are charges', () => pm.response.json().forEach(t => pm.expect(t.type).to.eql('charge')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Transactions — filter by status",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/transactions?status=completed"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('all are completed', () => pm.response.json().forEach(t => pm.expect(t.status).to.eql('completed')));"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

@@ -110,24 +110,24 @@
 
 ## Phase 10 — Refund Logic
 
-- [ ] Find original transaction — throw if not found or not `charge` + `completed`
-- [ ] Check `idempotencyKey` — return existing if duplicate
-- [ ] Open `dataSource.transaction()`
-- [ ] Lock wallet with `pessimistic_write`
-- [ ] Credit wallet balance
-- [ ] Save refund transaction as `completed`
-- [ ] Save `LedgerEntry` of type `refund`
-- [ ] Wire up `POST /api/transactions/refund`
-- [ ] Test: refund credits balance correctly
+- [x] Find original transaction — throw if not found or not `charge` + `completed`
+- [x] Check `idempotencyKey` — return existing if duplicate
+- [x] Open `dataSource.transaction()`
+- [x] Lock wallet with optimistic locking (`@VersionColumn`) instead of `pessimistic_write`
+- [x] Credit wallet balance
+- [x] Save refund transaction as `completed`
+- [x] Save `LedgerEntry` of type `refund`
+- [x] Wire up `POST /api/transactions/refund`
+- [x] Test: refund credits balance correctly
 
 ---
 
 ## Phase 11 — Transaction Queries
 
-- [ ] `findById(id)` — return transaction or `NotFoundException`
-- [ ] `findAll()` — return list with optional filters (`walletId`, `merchantId`, `type`, `status`)
-- [ ] Wire up: `GET /api/transactions/:id`, `GET /api/transactions`
-- [ ] Test filters work correctly
+- [x] `findById(id)` — return transaction or `NotFoundException`
+- [x] `findAll()` — return list with optional filters (`walletId`, `merchantId`, `type`, `status`)
+- [x] Wire up: `GET /api/transactions/:id`, `GET /api/transactions`
+- [x] Test filters work correctly
 
 ---
 
