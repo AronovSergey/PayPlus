@@ -17,13 +17,13 @@
 
 ## Phase 2 — Entities
 
-- [ ] Create `src/entities/wallet.entity.ts` — `id(uuid), externalId, currency, balance decimal(18,2), status(enum), createdAt, updatedAt`
-- [ ] Create `src/entities/merchant.entity.ts` — `id(uuid), name, status(enum), createdAt, updatedAt`
-- [ ] Create `src/entities/transaction.entity.ts` — `id(uuid), @ManyToOne wallet, @ManyToOne merchant, type(enum), amount decimal(18,2), currency, status(enum), declineReason(nullable), originalTransactionId(nullable), idempotencyKey(unique), createdAt, updatedAt`
-- [ ] Create `src/entities/ledger-entry.entity.ts` — `id(uuid), @ManyToOne wallet, @ManyToOne transaction, type(enum), amount decimal(18,2), currency, createdAt`
-- [ ] Add all enums: `WalletStatus`, `MerchantStatus`, `TransactionType`, `TransactionStatus`, `LedgerEntryType`
-- [ ] Register all entities in `TypeOrmModule` + `synchronize: true` (dev only)
-- [ ] Confirm all tables created in Postgres
+- [x] Create `src/entities/wallet.entity.ts` — `id(uuid), externalId, currency, balance decimal(18,2), status(enum), createdAt, updatedAt`
+- [x] Create `src/entities/merchant.entity.ts` — `id(uuid), name, status(enum), createdAt, updatedAt`
+- [x] Create `src/entities/transaction.entity.ts` — `id(uuid), @ManyToOne wallet, @ManyToOne merchant, type(enum), amount decimal(18,2), currency, status(enum), declineReason(nullable), originalTransactionId(nullable), idempotencyKey(unique), createdAt, updatedAt`
+- [x] Create `src/entities/ledger-entry.entity.ts` — `id(uuid), @ManyToOne wallet, @ManyToOne transaction, type(enum), amount decimal(18,2), currency, createdAt`
+- [x] Add all enums: `WalletStatus`, `MerchantStatus`, `TransactionType`, `TransactionStatus`, `LedgerEntryType`
+- [x] Register all entities in `TypeOrmModule` + `synchronize: true` (dev only)
+- [x] Confirm all tables created in Postgres
 
 ---
 

@@ -17,7 +17,7 @@ import { AppService } from './app.service';
         password: config.get<string>('DB_PASS'),
         database: config.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
+        synchronize: config.get<string>('NODE_ENV') !== 'production',
       }),
     }),
   ],
