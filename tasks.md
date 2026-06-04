@@ -6,12 +6,12 @@
 
 ## Phase 1 — Bootstrap
 
-- [ ] `nest new api --package-manager npm`
-- [ ] Install deps: `@nestjs/typeorm typeorm pg @nestjs/config class-validator class-transformer`
-- [ ] Create `.env` with `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME`, `PORT`
-- [ ] Configure `ConfigModule.forRoot()` in `app.module.ts`
-- [ ] Configure `TypeOrmModule.forRootAsync()` using `ConfigService`
-- [ ] Verify DB connection boots without error (`npm run start:dev`)
+- [x] `nest new api --package-manager npm`
+- [x] Install deps: `@nestjs/typeorm typeorm pg @nestjs/config class-validator class-transformer`
+- [x] Create `.env` with `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME`, `PORT`
+- [x] Configure `ConfigModule.forRoot()` in `app.module.ts`
+- [x] Configure `TypeOrmModule.forRootAsync()` using `ConfigService`
+- [x] Verify DB connection boots without error (`npm run start:dev`)
 
 ---
 
