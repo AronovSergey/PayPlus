@@ -38,12 +38,12 @@
 
 ## Phase 4 — Merchants Module Skeleton
 
-- [ ] `nest g module merchants`
-- [ ] `nest g controller merchants`
-- [ ] `nest g service merchants`
-- [ ] Inject `TypeOrmModule.forFeature([Merchant])` into `MerchantsModule`
-- [ ] Create `dto/create-merchant.dto.ts` — `name: string`
-- [ ] Create `dto/update-status.dto.ts` — `status: MerchantStatus`
+- [x] `nest g module merchants`
+- [x] `nest g controller merchants`
+- [x] `nest g service merchants`
+- [x] Inject `TypeOrmModule.forFeature([Merchant])` into `MerchantsModule`
+- [x] Create `dto/create-merchant.dto.ts` — `name: string`
+- [x] Create `dto/update-status.dto.ts` — `status: MerchantStatus`
 
 ---
 
