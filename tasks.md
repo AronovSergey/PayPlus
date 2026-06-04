@@ -49,12 +49,12 @@
 
 ## Phase 5 — Merchants Logic
 
-- [ ] `create()` — save merchant with status `active`
-- [ ] `findById()` — return merchant or throw `NotFoundException`
-- [ ] `findAll()` — return list (add basic pagination: `page`, `limit` if time allows)
-- [ ] `updateStatus()` — activate or inactivate
-- [ ] Wire up: `POST /api/merchants`, `GET /api/merchants/:id`, `GET /api/merchants`, `PATCH /api/merchants/:id/status`
-- [ ] Test all four endpoints
+- [x] `create()` — save merchant with status `active`
+- [x] `findById()` — return merchant or throw `NotFoundException`
+- [x] `findAll()` — return list (add basic pagination: `page`, `limit` if time allows)
+- [x] `updateStatus()` — activate or inactivate
+- [x] Wire up: `POST /api/merchants`, `GET /api/merchants/:id`, `GET /api/merchants`, `PATCH /api/merchants/:id/status`
+- [x] Test all four endpoints
 
 ---
 
