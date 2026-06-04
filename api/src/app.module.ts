@@ -5,6 +5,7 @@ import { HealthController } from './health/health.controller';
 import { MerchantsModule } from './merchants/merchants.module';
 import { WalletsModule } from './wallets/wallets.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { LedgerModule } from './ledger/ledger.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TransactionsModule } from './transactions/transactions.module';
     MerchantsModule,
     WalletsModule,
     TransactionsModule,
+    LedgerModule,
   ],
   controllers: [HealthController],
 })

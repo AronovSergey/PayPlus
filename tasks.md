@@ -133,14 +133,14 @@
 
 ## Phase 12 — Ledger Module
 
-- [ ] `nest g module ledger`
-- [ ] `nest g controller ledger`
-- [ ] `nest g service ledger`
-- [ ] Inject `TypeOrmModule.forFeature([LedgerEntry])`
-- [ ] `findByWallet(walletId)` — all ledger entries for a wallet, ordered by `createdAt DESC`
-- [ ] `findByTransaction(transactionId)` — all ledger entries for a transaction
-- [ ] Wire up: `GET /api/wallets/:id/ledger-entries`, `GET /api/transactions/:id/ledger-entries`
-- [ ] Test: charge creates 1 entry, refund creates 1 entry, declined creates 0 entries
+- [x] `nest g module ledger`
+- [x] `nest g controller ledger`
+- [x] `nest g service ledger`
+- [x] Inject `TypeOrmModule.forFeature([LedgerEntry])`
+- [x] `findByWallet(walletId)` — all ledger entries for a wallet, ordered by `createdAt DESC`
+- [x] `findByTransaction(transactionId)` — all ledger entries for a transaction
+- [x] Wire up: `GET /api/wallets/:id/ledger-entries`, `GET /api/transactions/:id/ledger-entries`
+- [x] Test: charge creates 1 entry, refund creates 1 entry, declined creates 0 entries
 
 ---
 
