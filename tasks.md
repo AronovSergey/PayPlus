@@ -29,10 +29,10 @@
 
 ## Phase 3 — Common Infrastructure
 
-- [ ] Create `src/common/filters/exception.filter.ts` — global filter returning structured error format
-- [ ] Register filter globally in `main.ts` via `app.useGlobalFilters()`
-- [ ] Add `ValidationPipe` globally in `main.ts`
-- [ ] Test that an unknown route returns the structured error format
+- [x] Create `src/common/filters/exception.filter.ts` — global filter returning structured error format
+- [x] Register filter globally in `main.ts` via `app.useGlobalFilters()`
+- [x] Add `ValidationPipe` globally in `main.ts`
+- [x] Test that an unknown route returns the structured error format
 
 ---
 
